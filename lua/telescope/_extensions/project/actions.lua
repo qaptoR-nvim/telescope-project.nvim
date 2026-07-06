@@ -2,6 +2,7 @@ local builtin = require("telescope.builtin")
 local actions = require("telescope.actions")
 local actions_state = require("telescope.actions.state")
 local transform_mod = require('telescope.actions.mt').transform_mod
+local Path = require('plenary.path')
 
 local _git = require("telescope._extensions.project.git")
 local _utils = require("telescope._extensions.project.utils")
@@ -122,11 +123,19 @@ M.delete_project = function(prompt_bufnr)
   local selected_path = M.get_selected_path(prompt_bufnr)
 
   local file = io.open(_utils.telescope_projects_file, "w")
+  local to_delete = false
   for _, project in pairs(projects) do
     if project.path == selected_path then
-      project.activated = 0
+        if not Path:new(project.path):exists() then
+            to_delete = true
+        else
+            project.activated = 0
+        end
     end
-    _utils.store_project(file, project)
+
+    if not to_delete then
+        _utils.store_project(file, project)
+    end
   end
 
   io.close(file)
