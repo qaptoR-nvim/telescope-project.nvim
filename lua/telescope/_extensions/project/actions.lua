@@ -123,8 +123,8 @@ M.delete_project = function(prompt_bufnr)
   local selected_path = M.get_selected_path(prompt_bufnr)
 
   local file = io.open(_utils.telescope_projects_file, "w")
-  local to_delete = false
   for _, project in pairs(projects) do
+    local to_delete = false
     if project.path == selected_path then
         if not Path:new(project.path):exists() then
             to_delete = true
